@@ -1,0 +1,15 @@
+{
+  "name": "test-rig",
+  "version": "0.1.0",
+  "description": "Test Supervisor Monitoring App for Begin Examples",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Bethel",
+  "license": "ISC",
+  "dependencies": {
+    "@architect/architect": "^8.5.9",
+    "@architect/functions": "^3.13.11"
+  }
+}

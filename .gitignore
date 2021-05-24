@@ -1,0 +1,8 @@
+node_modules/*
+.DS_Store
+sam.json
+sam.yaml
+.env
+prefs.arc
+preferences.arc
+arc.env
