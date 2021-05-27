@@ -1,4 +1,4 @@
-node_modules/*
+node_modules
 .DS_Store
 sam.json
 sam.yaml
@@ -6,3 +6,4 @@ sam.yaml
 prefs.arc
 preferences.arc
 arc.env
+

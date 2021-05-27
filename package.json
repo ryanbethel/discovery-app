@@ -10,6 +10,14 @@
   "license": "ISC",
   "dependencies": {
     "@architect/architect": "^8.5.9",
-    "@architect/functions": "^3.13.11"
+    "@architect/eslint-config": "^1.0.0",
+    "@architect/functions": "^3.13.11",
+    "@begin/data": "^2.0.1",
+    "tiny-json-http": "^7.3.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@architect/eslint-config"
+    ]
   }
 }

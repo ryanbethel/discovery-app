@@ -1,5 +1,5 @@
 @app
-test-rig
+discovery-app
 
 @shared
 
@@ -10,12 +10,13 @@ get /auth
 get /login
 post /logout
 post /log
+get /badge/:repo/:type
 
 @scheduled
-daily-smoke-tests cron(0 6 ? * MON-FRI *)
+update-daily cron(0 6 ? * MON-FRI *)
 
 @events
-smoke-test-all
+reindex-data
 
 @tables
 data
