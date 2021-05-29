@@ -8,12 +8,6 @@ discovery-app
 
 @http
 get /
-get /status
-get /auth
-get /login
-post /logout
-post /log
-get /badge/:repo/:type
 
 @scheduled
 update-daily cron(0 6 ? * MON-FRI *)

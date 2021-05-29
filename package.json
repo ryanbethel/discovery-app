@@ -6,7 +6,8 @@
   "scripts": {
     "dev:css": "TAILWIND_MODE=watch NODE_ENV=development npx postcss styles.css -o ./public/css/tailwind.css -w",
     "build:dev": "TAILWIND_MODE=build NODE_ENV=development npx postcss styles.css -o ./public/css/tailwind.css",
-    "build:prod": "TAILWIND_MODE=build NODE_ENV=production npx postcss styles.css -o ./public/css/tailwind.css"
+    "build:prod": "TAILWIND_MODE=build NODE_ENV=production npx postcss styles.css -o ./public/css/tailwind.css",
+    "build": "npm run build:prod"
   },
   "author": "Ryan Bethel",
   "license": "ISC",
