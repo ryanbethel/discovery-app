@@ -3,6 +3,9 @@ discovery-app
 
 @shared
 
+@static
+  fingerprint true
+
 @http
 get /
 get /status

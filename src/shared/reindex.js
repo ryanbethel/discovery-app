@@ -1,5 +1,6 @@
 const tiny = require('tiny-json-http')
 const data = require('@begin/data')
+const matter = require('gray-matter')
 // const begin = require('@architect/functions')
 
 
@@ -22,8 +23,9 @@ async function reindex () {
     console.log(e)
   }
   const allRepos = await getAllRepos()
-  const now = Date.now()
-  await data.set({ table: 'repos', key: 'all-repos-meta',  updatedAt: now, data: allRepos.body.map(({ id, name, updated_at }) => ({ id, repoName: name, updatedAt: updated_at })) })
+  console.log(allRepos.body[0].html_url)
+  const now = new Date()
+  await data.set({ table: 'repos', key: 'all-repos-meta',  updatedAt: now.toISOString(), data: allRepos.body.map(({ id, name, updated_at, html_url }) => ({ id, repoName: name, updatedAt: updated_at, url: html_url })) })
   let newRepos, updatedRepos, removedRepos
   if (allReposMeta) {
     newRepos = allRepos.body.filter((repo) => !allReposMeta.data.find((item) => item.id === repo.id))
@@ -53,8 +55,9 @@ async function reindex () {
       getReadme({ name: repo.name, login: 'begin-examples' }).then((readme) => {
         const output = repo
         const content = Buffer.from(readme.body.content, 'base64').toString()
+        const frontmatter = matter(content)
         const sha = readme.body.sha
-        output.readme = { content, sha }
+        output.readme = { content, sha, frontmatter }
         return output
       })
     )
@@ -64,14 +67,15 @@ async function reindex () {
       getReadme({ name: repo.name, login: 'begin-examples' }).then((readme) => {
         const output = repo
         const content = Buffer.from(readme.body.content, 'base64').toString()
+        const frontmatter = matter(content)
         const sha = readme.body.sha
-        output.readme = { content, sha }
+        output.readme = { content, sha, frontmatter }
         return output
       })
     )
   )
   const newDb = newWithReadmes.map(
-    async ({ id, name, node_id, created_at, updated_at, pushed_at, readme }) =>
+    async ({ id, name, node_id, created_at, updated_at, pushed_at, html_url, readme, }) =>
       await data.set({
         table: 'repos', key: name,
         data: {
@@ -81,12 +85,13 @@ async function reindex () {
           created_at,
           updated_at,
           pushed_at,
-          readme: { create: { content: readme.content, sha: readme.sha } },
+          url: html_url,
+          readme: { content: readme.content, sha: readme.sha, frontmatter: readme.frontmatter.data },
         },
       })
   )
   const updatedDb = updatedWithReadmes.map(
-    async ({ id, name, node_id, created_at, updated_at, pushed_at, readme }) =>
+    async ({ id, name, node_id, created_at, updated_at, pushed_at, html_url, readme, }) =>
       await data.set({
         table: 'repos', key: name,
         data: {
@@ -96,7 +101,8 @@ async function reindex () {
           created_at,
           updated_at,
           pushed_at,
-          readme: { create: { content: readme.content, sha: readme.sha } },
+          url: html_url,
+          readme: { content: readme.content, sha: readme.sha, frontmatter: readme.frontmatter.data },
         },
       })
   )
@@ -106,22 +112,6 @@ async function reindex () {
   )
   await Promise.all([ ...newDb, ...updatedDb, removedDb ])
 
-  // const delta = allRepos.body.filter((element) => {
-  //     const matching = allDbRepos.find((i) => i.id === element.id);
-  //     console.log({ matching });
-  //     console.log({ updated_at: element.updated_at });
-  //     let x = matching && matching !== [] ? matching.updated_at : undefined;
-  //     return element.updated_at !== x;
-  // });
-
-  // console.log(delta[0]);
-  // const deltaRepoPromiseArray = delta.slice(5).forEach((element) => getReadme({ name: element.name }));
-  // const deltaRepoArray = await Promise.all(deltaRepoPromiseArray);
-  // console.dir(deltaRepoArray);
-  // use `console.dir` to print nested objects
-  // console.dir(allUsers, { depth: null });
-
 }
 
 module.exports = reindex
-  .js

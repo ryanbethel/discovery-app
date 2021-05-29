@@ -1,10 +1,12 @@
 {
-  "name": "test-rig",
+  "name": "discovery-app",
   "version": "0.1.0",
-  "description": "Test Supervisor Monitoring App for Begin Examples",
+  "description": "Discovery App",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:css": "TAILWIND_MODE=watch NODE_ENV=development npx postcss styles.css -o ./public/css/tailwind.css -w",
+    "build:dev": "TAILWIND_MODE=build NODE_ENV=development npx postcss styles.css -o ./public/css/tailwind.css",
+    "build:prod": "TAILWIND_MODE=build NODE_ENV=production npx postcss styles.css -o ./public/css/tailwind.css"
   },
   "author": "Ryan Bethel",
   "license": "ISC",
@@ -13,7 +15,15 @@
     "@architect/eslint-config": "^1.0.0",
     "@architect/functions": "^3.13.11",
     "@begin/data": "^2.0.1",
-    "tiny-json-http": "^7.3.0"
+    "@tailwindcss/forms": "^0.3.2",
+    "autoprefixer": "^10.2.6",
+    "fuse.js": "^6.4.6",
+    "gray-matter": "^4.0.3",
+    "postcss": "^8.3.0",
+    "postcss-cli": "^8.3.1",
+    "tailwindcss": "^2.1.2",
+    "tiny-json-http": "^7.3.0",
+    "xss": "^1.0.9"
   },
   "eslintConfig": {
     "extends": [
