@@ -1,7 +1,6 @@
 const tiny = require('tiny-json-http')
 const data = require('@begin/data')
 const matter = require('gray-matter')
-// const begin = require('@architect/functions')
 
 
 async function getAllRepos () {
