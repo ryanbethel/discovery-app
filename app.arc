@@ -10,7 +10,7 @@ discovery-app
 get /
 
 @scheduled
-update-daily cron(0 6 ? * MON-FRI *)
+update-daily cron(0 * * * * *)
 
 @events
 reindex-data
