@@ -5,11 +5,12 @@ class PowerTable extends HTMLTableElement {
     super()
   }
   connectedCallback (){
-    if (this.hasAttribute('search')) {
+    if (this.hasAttribute('filter')) {
       const filter = JSON.parse(this.getAttribute('filter'))
-      filter.forEach(s => {
-        const input = document.getElementById(s.id)
-        input[s.event] = (e) => this.filterTable.bind(this)(this, e.target.value, s.columns)
+      console.log(filter)
+      filter.forEach(f => {
+        const input = document.getElementById(f.id)
+        input[f.event] = (e) => this.filterTable.bind(this)(this, e.target.value, f.columns)
       })
     }
     if (this.hasAttribute('sort')) {
@@ -62,7 +63,7 @@ class PowerTable extends HTMLTableElement {
       let show = false
       tds.map((td, index) => {
         const txtValue = td.textContent || td.innerText
-        if ((columns === 'all' || columns.includes(index) || columns === index) && (txtValue.toUpperCase().includes(value.toUpperCase()))) show = true
+        if ((columns === 'all' || columns === index || Array.from(columns).includes(index) ) && (txtValue.toUpperCase().includes(value.toUpperCase()))) show = true
       })
       tr.style.display = show ? '' : 'none'
     })

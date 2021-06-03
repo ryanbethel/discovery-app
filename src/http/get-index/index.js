@@ -45,7 +45,6 @@ async function page (req) {
             <title>login page</title>
             <meta name="description" content="a page with some links">
             <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
-            <script type="module" src="${arc.static('/assets/power-table.js')}"></script>
           </head>
           <body>
             <div class="bg-white">
@@ -61,7 +60,7 @@ async function page (req) {
                       <label for="currency" class="block text-base font-medium text-gray-500">Category</label>
                       <div class="mt-1.5 relative">
                       <select form="filterform"  onchange="categoryFilter()" id="category" name="category" class="appearance-none block w-full bg-none bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2 text-base text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="all">all</option>
+                        <option value="">all</option>
                         ${[ ...categorySet ].filter(i => i).map(cat => `<option ${category === cat ? 'selected' : ''} "${cat}" > ${cat}</option >`)}
                       </select>
                       <div class="pointer-events-none absolute inset-y-0 right-0 px-2 flex items-center">
@@ -97,29 +96,8 @@ async function page (req) {
                   </div>
                   </div>
                 </div>
+            <script type="module" src="${arc.static('/assets/power-table.js')}"></script>
             </body>
-            <script>
-              function categoryFilter() {
-                let input, filter, table, tr, td, i, txtValue;
-                input = document.getElementById("category");
-                filter = input.value.toUpperCase();
-                table = document.getElementById("examples");
-                tr = table.getElementsByTagName("tr");
-
-                for (i = 0; i < tr.length; i++) {
-                  td = tr[i].getElementsByTagName("td")[1];
-                  if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if ((txtValue.toUpperCase().indexOf(filter) > -1)||filter==='ALL') {
-                      tr[i].style.display = "";
-                    } else {
-                      tr[i].style.display = "none";
-                    }
-                  }
-                }
-              }
-              window.onload = categoryFilter
-            </script>
           </html>`
   }
 }
