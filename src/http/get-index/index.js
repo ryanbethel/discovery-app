@@ -28,8 +28,6 @@ async function page (req) {
 
     filteredRepos = fuse.search(search).map(repo => repo.item)
   }
-  console.log(filteredRepos.length)
-  console.log(filteredRepos[0])
   const table = dataTable(repos && filteredRepos.map(repo => ({ name: repo.data.name, url: repo.data.url, category: repo.data.readme.frontmatter.category, tags: repo.data.readme.frontmatter.tags, keywords: repo.data.readme.frontmatter.keywords })))
   const categories = repos && repos.map(repo => repo.data.readme.frontmatter.category)
   const categorySet = new Set(categories)
@@ -47,17 +45,18 @@ async function page (req) {
             <title>login page</title>
             <meta name="description" content="a page with some links">
             <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
+            <script type="module" src="${arc.static('/assets/power-table.js')}"></script>
           </head>
           <body>
-                <div class="bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div class="max-w-5xl mx-auto">
+            <div class="bg-white">
+              <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="max-w-5xl mx-auto">
                   <div class="max-w-7xl mx-auto pt-16 pb-10 px-4 sm:pt-24 sm:pb-10 sm:px-6 lg:px-8 lg:flex lg:justify-between">
                     <div class="max-w-xl">
                       <h2 class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">Begin Examples</h2>
                       <p class="mt-5 text-xl text-gray-500">Start building today. Search from our library of sample projects.</p>
                     </div>
-                   <form id="filterform" method="get" action="/"=></form> 
+                    <form id="filterform" method="get" action="/"=></form> 
                     <div class="mt-10 w-full max-w-xs">
                       <label for="currency" class="block text-base font-medium text-gray-500">Category</label>
                       <div class="mt-1.5 relative">
@@ -101,7 +100,6 @@ async function page (req) {
             </body>
             <script>
               function categoryFilter() {
-                console.log("cat filter ran")
                 let input, filter, table, tr, td, i, txtValue;
                 input = document.getElementById("category");
                 filter = input.value.toUpperCase();

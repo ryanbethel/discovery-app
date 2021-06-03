@@ -8,6 +8,7 @@ discovery-app
 
 @http
 get /
+get /table
 
 @scheduled
 update-daily rate(1 hour)

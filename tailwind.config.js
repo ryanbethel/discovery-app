@@ -4,11 +4,11 @@ module.exports = {
   mode: 'jit',
   purge: [
     './public/**/*.html',
+    './public/**/*.js',
     './src/**/*.{js,jsx,ts,tsx}',
   ],
   plugins: [
-    require('@tailwindcss/forms'),
-  ],
+    require('@tailwindcss/forms')],
   theme: {
   }
 }

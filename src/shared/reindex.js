@@ -22,7 +22,6 @@ async function reindex () {
     console.log(e)
   }
   const allRepos = await getAllRepos()
-  console.log(allRepos.body[0].html_url)
   const now = new Date()
   await data.set({ table: 'repos', key: 'all-repos-meta',  updatedAt: now.toISOString(), data: allRepos.body.map(({ id, name, updated_at, html_url }) => ({ id, repoName: name, updatedAt: updated_at, url: html_url })) })
   let newRepos, updatedRepos, removedRepos
