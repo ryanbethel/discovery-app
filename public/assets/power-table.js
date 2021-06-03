@@ -5,58 +5,64 @@ class PowerTable extends HTMLTableElement {
     super()
   }
   connectedCallback (){
-    if (this.hasAttribute('data-search')) {
-      const input = document.getElementById(this.getAttribute('data-search'))
-      input.onkeyup = (e) => this.filterTable.bind(this)(this, e.target.value)
+    if (this.hasAttribute('search')) {
+      const filter = JSON.parse(this.getAttribute('filter'))
+      filter.forEach(s => {
+        const input = document.getElementById(s.id)
+        input[s.event] = (e) => this.filterTable.bind(this)(this, e.target.value, s.columns)
+      })
     }
-    const headerRow = this.querySelectorAll('tr')[0]
-    const headerColumns = Array.from(headerRow.querySelectorAll('td,th'))
-    const sortAscending = /* html*/`
+    if (this.hasAttribute('sort')) {
+
+      const sort = JSON.parse(this.getAttribute('sort'))
+      const headerRow = this.querySelectorAll('tr')[0]
+      const headerColumns = Array.from(headerRow.querySelectorAll('td,th'))
+      const sortAscending = /* html*/`
     <span data-ascending style="display:none;">
       <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h5a1 1 0 000-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM13 16a1 1 0 102 0v-5.586l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L13 10.414V16z" />
       </svg>
     </span>`
-    const sortDescending = /* html*/`
+      const sortDescending = /* html*/`
     <span data-descending style="display:none;">
       <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
         <path d="M3 3a1 1 0 000 2h11a1 1 0 100-2H3zM3 7a1 1 0 000 2h7a1 1 0 100-2H3zM3 11a1 1 0 100 2h4a1 1 0 100-2H3zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
       </svg>
     </span>`
-    const unsorted = /* html*/`
+      const unsorted = /* html*/`
     <span data-unsorted >
       <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
         <path d="M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
       </svg>
     </span>`
-    function addControls (content) {
-      return /* html*/`
+      function addControls (content) {
+        return /* html*/`
       <span class="flex">
         <span>${content}</span>
         <span data-sort-control="unsorted">${unsorted + sortAscending + sortDescending}</span>
       </span>`
-    }
+      }
 
-    headerColumns.forEach(td => {
-      const content = td.innerHTML
-      td.innerHTML = addControls(content)
-    })
-    const defaultSort = this.hasAttribute('data-initial-sort-column') ? this.getAttribute('data-initial-sort-column').toNumber() : 0
-    headerColumns.map((td, index) => td.onclick = () => this.sortTable.bind(this)(this, index, defaultSort))
+      headerColumns.map((td, index) => {
+        if (sort.sortable.includes(index)) {
+          const content = td.innerHTML
+          td.innerHTML = addControls(content)
+          td.onclick = () => this.sortTable.bind(this)(this, index, sort.defaultColumn)
+        }
+      })
+    }
   }
 
 
 
-  filterTable (table, value) {
+  filterTable (table, value, columns) {
     const trs = Array.from(table.querySelectorAll('tr'))
     trs.slice(1).forEach(tr => {
-      const tds = tr.querySelectorAll('td')
+      const tds = Array.from(tr.querySelectorAll('td'))
       let show = false
-      tds.forEach(td => {
+      tds.map((td, index) => {
         const txtValue = td.textContent || td.innerText
-        if (txtValue.toUpperCase().includes(value.toUpperCase())) {
-          show = true
-        }
+        if ((columns === 'all' || columns.includes(index) || columns === index) && (txtValue.toUpperCase().includes(value.toUpperCase()))) show = true
       })
       tr.style.display = show ? '' : 'none'
     })

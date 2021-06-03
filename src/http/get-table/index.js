@@ -20,7 +20,7 @@ function page () {
     <label >my input</label>
     <input id="myInput" type="text"/>
       
-<table is="power-table" data-search="myInput" data-default-sort-column="0">
+<table is="power-table" filter='[{"id":"search","columns":2,"event":"onkeyup"}]' sort='{"defaultColumn":0,"sortable":[0,1,2]}'>
     <thead>
         <tr>
             <td >One</td>
