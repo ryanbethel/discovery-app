@@ -24,6 +24,7 @@ async function page (req) {
 
   let filteredRepos = repos
   if (search) {
+    console.log('search ran')
     const fuse = new Fuse(repos, { keys: [ 'data.name', 'data.readme.content', 'data.readme.tags', 'data.readme.categories' ] })
 
     filteredRepos = fuse.search(search).map(repo => repo.item)
