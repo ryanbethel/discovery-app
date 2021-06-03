@@ -12,18 +12,20 @@
   },
   "author": "Ryan Bethel",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "@architect/architect": "^8.5.9",
     "@architect/eslint-config": "^1.0.0",
-    "@architect/functions": "^3.13.11",
-    "@begin/data": "^2.0.1",
     "@tailwindcss/forms": "^0.3.2",
     "autoprefixer": "^10.2.6",
-    "fuse.js": "^6.4.6",
-    "gray-matter": "^4.0.3",
     "postcss": "^8.3.0",
     "postcss-cli": "^8.3.1",
-    "tailwindcss": "^2.1.2",
+    "tailwindcss": "^2.1.2"
+  },
+  "dependencies": {
+    "@architect/functions": "^3.13.11",
+    "@begin/data": "^2.0.1",
+    "fuse.js": "^6.4.6",
+    "gray-matter": "^4.0.3",
     "tiny-json-http": "^7.3.0",
     "xss": "^1.0.9"
   },
