@@ -32,7 +32,7 @@ async function page (req) {
     catch (e){console.log(e)}
   }
 
-  const categories = reposMeta && reposMeta.data.map(repo => repo.discovery.category)
+  const categories = reposMeta && reposMeta.data.map(repo => repo.discovery && repo.discovery.category)
   const categorySet = new Set(categories)
   const tableData = reposMeta ? reposMeta.data.map(repo => ({ name: repo.name, url: repo.url, category: repo.discovery.category, tags: repo.discovery.tags })) : []
   const table = dataTable(tableData, filteredRepos, [ ...categorySet ])
