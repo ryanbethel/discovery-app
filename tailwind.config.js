@@ -8,6 +8,7 @@ module.exports = {
     './src/**/*.{js,jsx,ts,tsx}',
   ],
   plugins: [
+    // eslint-disable-next-line global-require
     require('@tailwindcss/forms') ],
   theme: {
   }

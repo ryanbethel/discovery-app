@@ -1,0 +1,13 @@
+Make a copy of this file without the .example extension.
+@env
+testing
+  GH_TOKEN <a_github_personal_access_token>
+
+staging
+  GH_TOKEN <a_github_personal_access_token>
+
+# production
+  GH_TOKEN <a_github_personal_access_token>
+
+@sandbox-startup
+node scripts/startup.js

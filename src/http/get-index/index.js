@@ -32,7 +32,6 @@ async function page (req) {
     catch (e){console.log(e)}
   }
 
-  console.log(reposMeta)
   const categories = reposMeta && reposMeta.data.map(repo => (repo.discovery?.category))
   const categorySet = new Set(categories)
   const tableData = reposMeta ? reposMeta.data.map(repo => ({ name: repo.name, url: repo.url, category: repo?.discovery?.category, tags: repo?.discovery?.tags })) : []
@@ -49,7 +48,7 @@ async function page (req) {
           <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>login page</title>
+            <title>Begin Examples</title>
             <meta name="description" content="a page with some links">
             <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
           </head>

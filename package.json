@@ -32,6 +32,9 @@
     "xss": "^1.0.9"
   },
   "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 2020
+    },
     "extends": [
       "@architect/eslint-config"
     ]
