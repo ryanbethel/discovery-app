@@ -27,7 +27,7 @@ async function page (req) {
       const repoReadmes = await Promise.all(reposMeta.data.map(async repo => await data.get({ table: 'repos', key: repo.name })))
       const fuse = new Fuse(repoReadmes, { ignoreLocation: true, keys: [ 'data.name', 'data.readme.content' ], includeScore: true })
       const results = fuse.search(search)
-      filteredRepos = results.filter(i => i.score <= 0.1).map(repo => repo.item.data.name)
+      filteredRepos = results.filter(i => i.score <= 0.2).map(repo => repo.item.data.name)
     }
     catch (e){console.log(e)}
   }
