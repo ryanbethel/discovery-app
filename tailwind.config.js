@@ -8,7 +8,7 @@ module.exports = {
     './src/**/*.{js,jsx,ts,tsx}',
   ],
   plugins: [
-    require('@tailwindcss/forms')],
+    require('@tailwindcss/forms') ],
   theme: {
   }
 }

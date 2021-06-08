@@ -7,10 +7,11 @@ class PowerTable extends HTMLTableElement {
   connectedCallback (){
     if (this.hasAttribute('filter')) {
       const filter = JSON.parse(this.getAttribute('filter'))
-      console.log(filter)
       filter.forEach(f => {
         const input = document.getElementById(f.id)
         input[f.event] = (e) => this.filterTable.bind(this)(this, e.target.value, f.columns)
+        // run the filter once initialized
+        // this.filterTable.bind(this)(this, input.value, f.columns)
       })
     }
     if (this.hasAttribute('sort')) {
@@ -51,6 +52,8 @@ class PowerTable extends HTMLTableElement {
           td.onclick = () => this.sortTable.bind(this)(this, index, sort.defaultColumn)
         }
       })
+      // sort once initialized
+      this.sortTable.bind(this)(this, sort.defaultColumn, sort.defaultColumn)
     }
   }
 
@@ -74,13 +77,13 @@ class PowerTable extends HTMLTableElement {
     const previousColumnState = headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll('span[data-sort-control]')[0].getAttribute('data-sort-control')
 
     // reset sort controls
-    headerRow.querySelectorAll('td>span>span[data-ascending],th>span>span[data-ascending]')
+    headerRow.querySelectorAll('td>span>span>span[data-ascending],th>span>span>span[data-ascending]')
       .forEach(span => span.setAttribute('style', 'display:none;'))
-    headerRow.querySelectorAll('td>span>span[data-unsorted],th>span>span[data-unsorted]')
+    headerRow.querySelectorAll('td>span>span>span[data-unsorted],th>span>span>span[data-unsorted]')
       .forEach(span => span.setAttribute('style', 'display: ;'))
-    headerRow.querySelectorAll('td>span>span[data-descending],th>span>span[data-descending]')
+    headerRow.querySelectorAll('td>span>span>span[data-descending],th>span>span>span[data-descending]')
       .forEach(span => span.setAttribute('style', 'display:none;'))
-    headerRow.querySelectorAll('td>span[data-sort-control],th>span[data-sort-control]')
+    headerRow.querySelectorAll('td>span>span[data-sort-control],th>span>span[data-sort-control]')
       .forEach(span => span.setAttribute('data-sort-control', 'unsorted'))
 
 
@@ -104,11 +107,11 @@ class PowerTable extends HTMLTableElement {
       break
     }
 
-    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll('span[data-sort-control]')[0].setAttribute('data-sort-control', sortDir)
-    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span[data-ascending]`)[0].setAttribute('style', 'display: none ;')
-    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span[data-descending]`)[0].setAttribute('style', 'display: none ;')
-    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span[data-unsorted]`)[0].setAttribute('style', 'display: none ;')
-    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span[data-${sortDir}]`)[0].setAttribute('style', 'display: ;')
+    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll('span>span[data-sort-control]')[0].setAttribute('data-sort-control', sortDir)
+    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span>span[data-ascending]`)[0].setAttribute('style', 'display: none ;')
+    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span>span[data-descending]`)[0].setAttribute('style', 'display: none ;')
+    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span>span[data-unsorted]`)[0].setAttribute('style', 'display: none ;')
+    headerRow.querySelectorAll('td,th').item(sortBy).querySelectorAll(`span>span>span[data-${sortDir}]`)[0].setAttribute('style', 'display: ;')
 
     let rows, switching, i, x, y, shouldSwitch
     switching = true

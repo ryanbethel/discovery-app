@@ -10,28 +10,33 @@ async function page (req) {
   const category = xss(query.category)
 
 
-  let reposMeta, repos
+
+  let reposMeta
   try {
     reposMeta = await data.get({ table: 'repos', key: 'all-repos-meta' })
     const updatedAt = reposMeta ? new Date(reposMeta.updatedAt) : null
-    repos = reposMeta ? await Promise.all(reposMeta.data.map(async repo => await data.get({ table: 'repos', key: repo.repoName }))) : null
-
     if (!reposMeta || ((updatedAt.valueOf() + 60 * 60 * 1000) <= Date.now())) {
       await arc.events.publish({ name: 'reindex-data', payload: { trigger: 'get-index' }, })
     }
   }
   catch (e) { console.log(e) }
 
-  let filteredRepos = repos
-  if (search) {
-    console.log('search ran')
-    const fuse = new Fuse(repos, { keys: [ 'data.name', 'data.readme.content', 'data.readme.tags', 'data.readme.categories' ] })
-
-    filteredRepos = fuse.search(search).map(repo => repo.item)
+  let filteredRepos = reposMeta.data.map(r => r.name)
+  if (search && reposMeta) {
+    try {
+      const repoReadmes = await Promise.all(reposMeta.data.map(async repo => await data.get({ table: 'repos', key: repo.name })))
+      const fuse = new Fuse(repoReadmes, { ignoreLocation: true, keys: [ 'data.name', 'data.readme.content' ], includeScore: true })
+      const results = fuse.search(search)
+      filteredRepos = results.filter(i => i.score <= 0.1).map(repo => repo.item.data.name)
+    }
+    catch (e){console.log(e)}
   }
-  const table = dataTable(repos && filteredRepos.map(repo => ({ name: repo.data.name, url: repo.data.url, category: repo.data.readme.frontmatter.category, tags: repo.data.readme.frontmatter.tags, keywords: repo.data.readme.frontmatter.keywords })))
-  const categories = repos && repos.map(repo => repo.data.readme.frontmatter.category)
+
+  const categories = reposMeta && reposMeta.data.map(repo => repo.discovery.category)
   const categorySet = new Set(categories)
+  const tableData = reposMeta ? reposMeta.data.map(repo => ({ name: repo.name, url: repo.url, category: repo.discovery.category, tags: repo.discovery.tags })) : []
+  const table = dataTable(tableData, filteredRepos, [ ...categorySet ])
+
 
 
 
@@ -94,6 +99,7 @@ async function page (req) {
                     </div>
 
                     ${table}
+
                   </div>
                   </div>
                 </div>

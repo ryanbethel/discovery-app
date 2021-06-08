@@ -1,49 +1,56 @@
 const tiny = require('tiny-json-http')
 const data = require('@begin/data')
-const matter = require('gray-matter')
 
 
 async function getAllRepos () {
-  let repos = await tiny.get({ url: 'https://api.github.com/orgs/begin-examples/repos', data: { 'per-page': 100, private: false }, headers: { Authorization: `token ${process.env.GH_TOKEN}` } })
+  let repos = await tiny.get({ url: 'https://api.github.com/orgs/begin-examples/repos', data: { 'per_page': 100, type: 'public' }, headers: { Authorization: `token ${process.env.GH_TOKEN}` } })
   return repos
 }
 async function getReadme ({ name, login }) {
   let readme = await tiny.get({ url: `https://api.github.com/repos/${login}/${name}/readme`, headers: { Authorization: `token ${process.env.GH_TOKEN}` } })
   return readme
 }
+async function getGithubRaw ({ name, login, file, branch }) {
+  let meta = await tiny.get({ url: `https://raw.githubusercontent.com/${login}/${name}/${branch}/${file}`, headers: { Authorization: `token ${process.env.GH_TOKEN}` } })
+
+  return meta
+}
 
 async function reindex () {
-  let allReposMeta = null
-  try {
-    allReposMeta = await data.get({ table: 'repos', key: 'all-repos-meta' })
-    // [{data:{id,repoName,updated}}, {data:{id,repoName,updated}}]
-  }
-  catch (e) {
-    console.log(e)
-  }
-  const allRepos = await getAllRepos()
+  const  allReposDb = await data.get({ table: 'repos', key: 'all-repos-meta' })
+  const  reposGithub = await getAllRepos()
+  const  registeredGithub = await getGithubRaw({ name: 'integration-tester', login: 'begin-examples', branch: 'main', file: 'registered-repositories.json' })
+  const registered = JSON.parse(registeredGithub.body).registeredRepos
+  const  registeredList = registered.map(repo => repo.name.replace('begin-examples/', ''))
+  const registeredReposMetaData = reposGithub.body.filter(repo => registeredList.includes(repo.name)).map(r => ({ id: r.id, name: r.name, updatedAt: r.updated_at, url: r.html_url, discovery: registered.find(i => i.name === 'begin-examples/' +  r.name).discovery }))
+
   const now = new Date()
-  await data.set({ table: 'repos', key: 'all-repos-meta',  updatedAt: now.toISOString(), data: allRepos.body.map(({ id, name, updated_at, html_url }) => ({ id, repoName: name, updatedAt: updated_at, url: html_url })) })
+  await data.set({
+    table: 'repos',
+    key: 'all-repos-meta',
+    updatedAt: now.toISOString(),
+    data: registeredReposMetaData
+  })
   let newRepos, updatedRepos, removedRepos
-  if (allReposMeta) {
-    newRepos = allRepos.body.filter((repo) => !allReposMeta.data.find((item) => item.id === repo.id))
-    updatedRepos = allRepos.body.filter((repo) => {
-      const index = allReposMeta.findIndex((item) => item.id === repo.id)
+  if (allReposDb) {
+    newRepos = registeredReposMetaData.filter((repo) => !allReposDb.data.find((item) => item.id === repo.id))
+    updatedRepos = registeredReposMetaData.filter((repo) => {
+      const index = allReposDb.findIndex((item) => item.id === repo.id)
       if (index !== -1) {
-        const hasReadme = allReposMeta[index].readme ? true : false
-        const dbDate = new Date(allReposMeta[index].updated_at)
-        const newDate = new Date(repo.updated_at)
-        const dateChanged = newDate > dbDate
+        const hasReadme = allReposDb[index].readme ? true : false
+        const dbDate = new Date(allReposDb[index].updatedAt)
+        const newDate = new Date(repo.updatedAt)
+        const dateChanged = newDate.toValue() > dbDate.toValue()
         return dateChanged || !hasReadme
       }
       else {
         return false
       }
     })
-    removedRepos = allReposMeta.data.filter((repo) => !allRepos.body.find((item) => item.id === repo.id))
+    removedRepos = allReposDb.data.filter((repo) => !registeredReposMetaData.find((item) => item.id === repo.id))
   }
   else {
-    newRepos = allRepos.body
+    newRepos = registeredReposMetaData
     updatedRepos = []
     removedRepos = []
   }
@@ -53,10 +60,12 @@ async function reindex () {
       getReadme({ name: repo.name, login: 'begin-examples' }).then((readme) => {
         const output = repo
         const content = Buffer.from(readme.body.content, 'base64').toString()
-        const frontmatter = matter(content)
         const sha = readme.body.sha
-        output.readme = { content, sha, frontmatter }
+        output.readme = { content, sha }
         return output
+      }).catch(e => {
+        console.log(e)
+        return null
       })
     )
   )
@@ -65,43 +74,41 @@ async function reindex () {
       getReadme({ name: repo.name, login: 'begin-examples' }).then((readme) => {
         const output = repo
         const content = Buffer.from(readme.body.content, 'base64').toString()
-        const frontmatter = matter(content)
         const sha = readme.body.sha
-        output.readme = { content, sha, frontmatter }
+        output.readme = { content, sha }
         return output
+      }).catch(e => {
+        console.log(e)
+        return null
       })
     )
   )
   const newDb = newWithReadmes.map(
-    async ({ id, name, node_id, created_at, updated_at, pushed_at, html_url, readme, }) =>
+    async ({ id, name, updatedAt, url, discovery, readme, }) =>
       await data.set({
         table: 'repos', key: name,
         data: {
           id,
           name,
-          node_id,
-          created_at,
-          updated_at,
-          pushed_at,
-          url: html_url,
-          readme: { content: readme.content, sha: readme.sha, frontmatter: readme.frontmatter.data },
-        },
+          updatedAt,
+          url,
+          discovery,
+          readme: { content: readme.content, sha: readme.sha,  },
+        }
       })
   )
   const updatedDb = updatedWithReadmes.map(
-    async ({ id, name, node_id, created_at, updated_at, pushed_at, html_url, readme, }) =>
+    async ({ id, name, updatedAt, url, discovery, readme, }) =>
       await data.set({
         table: 'repos', key: name,
         data: {
           id,
           name,
-          node_id,
-          created_at,
-          updated_at,
-          pushed_at,
-          url: html_url,
-          readme: { content: readme.content, sha: readme.sha, frontmatter: readme.frontmatter.data },
-        },
+          updatedAt,
+          url,
+          discovery,
+          readme: { content: readme.content, sha: readme.sha,  },
+        }
       })
   )
   const removedDb = removedRepos.map(
