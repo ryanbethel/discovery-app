@@ -4,7 +4,7 @@ discovery-app
 @shared
 
 @static
-  fingerprint true
+  fingerprint false
 
 @http
 get /
