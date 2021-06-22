@@ -22,7 +22,7 @@
     "eslint": "^7.28.0",
     "postcss": "^8.3.0",
     "postcss-cli": "^8.3.1",
-    "tailwindcss": "^2.1.2"
+    "tailwindcss": "^2.2.2"
   },
   "dependencies": {
     "@architect/functions": "^3.13.11",
