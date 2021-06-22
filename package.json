@@ -7,7 +7,7 @@
     "watch:css": "TAILWIND_MODE=watch NODE_ENV=development npx postcss ./src/styles/styles.css -o ./public/css/tailwind.css -w",
     "build:dev": "TAILWIND_MODE=build NODE_ENV=development npx postcss ./src/styles/styles.css -o ./public/css/tailwind.css",
     "build:prod": "TAILWIND_MODE=build NODE_ENV=production npx postcss ./src/styles/styles.css -o ./public/css/tailwind.css --verbose",
-    "build": "echo test > ./public/test.ignore.css && ls public",
+    "build": "rm ./public/static.json && npm run build:prod",
     "deploy": "npm run build && npx arc deploy",
     "dev-watch": "concurrently -n tailwind,sandbox -c green,blue \"npm run watch:css\" \"npx arc sandbox\""
   },

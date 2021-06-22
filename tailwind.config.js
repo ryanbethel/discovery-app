@@ -1,7 +1,7 @@
 /* eslint-disable filenames/match-regex */
 // tailwind.config.js
 module.exports = {
-  // mode: 'jit',
+  mode: 'jit',
   purge: [
     './public/**/*.html',
     './public/**/*.js',
