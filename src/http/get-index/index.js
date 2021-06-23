@@ -40,6 +40,7 @@ async function page (req) {
 
 
 
+  // <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
   return {
     status: 200,
     html: /* html*/`
@@ -50,7 +51,6 @@ async function page (req) {
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Begin Examples</title>
             <meta name="description" content="a page with some links">
-            <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
           </head>
           <body>
             <div class="bg-white">
