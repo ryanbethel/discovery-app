@@ -21,10 +21,10 @@ async function page (req) {
   }
   catch (e) { console.log(e) }
 
-  let filteredRepos = reposMeta.data.map(r => r.name)
+  let filteredRepos = reposMeta?.data.map(r => r.name)
   if (search && reposMeta) {
     try {
-      const repoReadmes = await Promise.all(reposMeta.data.map(async repo => await data.get({ table: 'repos', key: repo.name })))
+      const repoReadmes = await Promise.all(reposMeta?.data.map(async repo => await data.get({ table: 'repos', key: repo.name })))
       const fuse = new Fuse(repoReadmes, { ignoreLocation: true, keys: [ 'data.name', 'data.readme.content' ], includeScore: true })
       const results = fuse.search(search)
       filteredRepos = results.filter(i => i.score <= 0.2).map(repo => repo.item.data.name)
@@ -32,15 +32,14 @@ async function page (req) {
     catch (e){console.log(e)}
   }
 
-  const categories = reposMeta && reposMeta.data.map(repo => (repo.discovery?.category))
+  const categories = reposMeta?.data.map(repo => (repo.discovery?.category))
   const categorySet = new Set(categories)
-  const tableData = reposMeta ? reposMeta.data.map(repo => ({ name: repo.name, url: repo.url, category: repo?.discovery?.category, tags: repo?.discovery?.tags })) : []
+  const tableData = reposMeta?.data.map(repo => ({ name: repo.name, url: repo.url, category: repo?.discovery?.category, tags: repo?.discovery?.tags })) : []
   const table = dataTable(tableData, filteredRepos, [ ...categorySet ])
 
 
 
 
-  // <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
   return {
     status: 200,
     html: /* html*/`
@@ -51,6 +50,7 @@ async function page (req) {
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <title>Begin Examples</title>
             <meta name="description" content="a page with some links">
+            <link href="${arc.static('/css/tailwind.css')}" rel="stylesheet">
           </head>
           <body>
             <div class="bg-white">
